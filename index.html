@@ -224,9 +224,9 @@
   <div class="gatecard">
     <p class="eyebrow">Bancroft Construction · Project Management</p>
     <h1>Staffing &amp; Schedule Planner</h1>
-    <p class="gsub">Shared team planner — everyone edits the same live schedule. Enter your name and the team passcode to continue.</p>
+    <p class="gsub">Shared team planner — everyone edits the same live schedule. Enter your name and the Jobsite Schedule password to continue.</p>
     <label>Your name<input id="gateName" placeholder="e.g. David" autocomplete="name"></label>
-    <label>Team passcode<input id="gatePass" type="password" placeholder="passcode"></label>
+    <label id="gatePassWrap">Password<input id="gatePass" type="password" placeholder="same as the Jobsite Schedule" autocomplete="current-password"></label>
     <button id="gateBtn" class="btn primary">Open the planner</button>
     <p id="gateErr" class="gerr"></p>
   </div>
@@ -373,7 +373,10 @@
   // ---- config ----
   var SUPABASE_URL="https://inzfsmqqvpkrreypvciw.supabase.co";
   var SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluemZzbXFxdnBrcnJleXB2Y2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTI2MjQsImV4cCI6MjEwMDM4ODYyNH0._6Y-jGkf4wv6cEL51mGCCnt2_SXN2cNglovdrHtkzQU";
-  var PASSCODE="bancroft2026";
+  // Everyone signs in with the Jobsite Schedule's shared login. The password is checked by Supabase,
+  // never stored here. The session key "jsb-auth" is shared with the other Bancroft tools, so one
+  // sign-in covers them all in that tab.
+  var LOGIN_EMAIL="scheduler@bancroftconstruction.com";
 
   var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var ANCHOR_Y=2026, ANCHOR_M=6;   // timeline index 0 = Jul 2026
@@ -386,7 +389,7 @@
   function curMonthIdx(){ var d=new Date(); var idx=(d.getFullYear()-ANCHOR_Y)*12+(d.getMonth()-ANCHOR_M); return Math.max(0, Math.min(N-WIN, idx)); }
   var viewStart=curMonthIdx();
 
-  var db=window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {realtime:{params:{eventsPerSecond:5}}});
+  var db=window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {realtime:{params:{eventsPerSecond:5}}, auth:{persistSession:true, autoRefreshToken:true, storageKey:"jsb-auth", storage:window.sessionStorage}});
   var clientId="c"+Date.now()+"-"+Math.floor(Math.random()*1e6);
   var myName="";
   var state=null, nextId=0;
@@ -1109,19 +1112,38 @@
   };
 
   // ---- gate ----
-  try{ myName=localStorage.getItem("bs_name")||""; }catch(e){}
+  // name is shared with the other Bancroft tools ("jsb.myName"); "bs_name" is this page's older key
+  try{ myName=localStorage.getItem("jsb.myName")||localStorage.getItem("bs_name")||""; }catch(e){}
   el("gateName").value=myName;
+  function hasSession(){ return db.auth.getSession().then(function(r){ return !!(r&&r.data&&r.data.session); }, function(){ return false; }); }
+  function openPlanner(name){
+    myName=name; try{ localStorage.setItem("jsb.myName",name); localStorage.setItem("bs_name",name); }catch(e){}
+    el("gatePass").value=""; el("gate").classList.add("hide"); boot();
+  }
   function submitGate(){
-    var name=el("gateName").value.trim(), pass=el("gatePass").value;
+    var name=el("gateName").value.trim(), pass=el("gatePass").value, b=el("gateBtn");
     if(!name){ el("gateErr").textContent="Please enter your name."; return; }
-    if(pass!==PASSCODE){ el("gateErr").textContent="Incorrect passcode — check with your team."; return; }
-    myName=name; try{ localStorage.setItem("bs_name",name); }catch(e){}
-    el("gate").classList.add("hide"); boot();
+    el("gateErr").textContent="";
+    hasSession().then(function(ok){
+      if(ok){ openPlanner(name); return; }
+      if(!pass){ el("gateErr").textContent="Enter the Jobsite Schedule password."; return; }
+      b.disabled=true; b.textContent="Signing in…";
+      db.auth.signInWithPassword({email:LOGIN_EMAIL, password:pass}).then(function(res){
+        b.disabled=false; b.textContent="Open the planner";
+        if(res.error){ el("gateErr").textContent=/invalid/i.test(res.error.message)?"That password isn’t right.":"Couldn’t sign in: "+res.error.message; el("gatePass").select(); return; }
+        openPlanner(name);
+      }, function(err){ b.disabled=false; b.textContent="Open the planner"; el("gateErr").textContent="Couldn’t sign in: "+(err&&err.message?err.message:"network error"); });
+    });
   }
   el("gateBtn").onclick=submitGate;
   el("gatePass").addEventListener("keydown",function(e){ if(e.key==="Enter")submitGate(); });
-  el("gateName").addEventListener("keydown",function(e){ if(e.key==="Enter")el("gatePass").focus(); });
-  (el("gateName").value?el("gatePass"):el("gateName")).focus();
+  el("gateName").addEventListener("keydown",function(e){ if(e.key==="Enter"){ if(el("gatePassWrap").style.display==="none")submitGate(); else el("gatePass").focus(); } });
+  // already signed in on another Bancroft tool in this tab: skip the password (and the whole gate if the name is known)
+  hasSession().then(function(ok){
+    if(ok&&myName){ openPlanner(myName); return; }
+    if(ok) el("gatePassWrap").style.display="none";
+    (el("gateName").value&&!ok?el("gatePass"):el("gateName")).focus();
+  });
 })();
 </script>
 </body>
