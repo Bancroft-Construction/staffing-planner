@@ -14,10 +14,8 @@ supervisor (SS) and project manager (PM) coverage, utilization, and contract dol
 - Data lives in Supabase (`SUPABASE_URL` / `SUPABASE_KEY` near the top of the script). The whole plan
   is one JSON document: table `plan`, row `id = 1`, column `data`. Saved versions for the History tab
   are stored there too. Edits sync between people live through the Supabase Realtime channel `plan-live`.
-- The entry screen asks for a name and the Jobsite Schedule's password. It signs in to Supabase with the
-  schedule board's shared login (`LOGIN_EMAIL`); the session is kept in sessionStorage under `jsb-auth`,
-  shared with the other Bancroft tools, so a sign-in on any of them opens this page too. No password is
-  stored in the page. `supabase/lock-planner.sql` limits tables `plan` and `plan_history` to that login.
+- The entry screen asks for a name and the team passcode (`PASSCODE` in the script). That check runs
+  in the browser only, and the passcode is visible to anyone who reads the page source.
 
 ## Tabs
 
