@@ -36,3 +36,10 @@ color bands), Contract $, History.
   because the same document is shared by everyone and by saved versions.
 - If the page says the plan database isn't responding, the free Supabase project has probably paused
   after a week without use: restore it from the Supabase dashboard.
+
+## Brand colors and chart colors
+
+The page uses the Bancroft brand palette (Marble #FFFCFA, Stone #E7E3DD, Copper #8A5D3B, Granite #252928) in
+the `:root` variables. The Schedule & Coverage and Utilization panels are the exception: CSS scoped to
+`#view-sched` and `#view-util` keeps them white with traditional colors (green active/well utilized, red
+gaps, amber off-schedule/light, blue SS, purple PM) in light and dark mode.

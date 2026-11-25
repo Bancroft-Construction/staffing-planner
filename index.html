@@ -9,30 +9,30 @@
 <style>
   /* Shared Bancroft palette: same colors as the Jobsite Schedule and BD Directory pages */
   :root{
-    --bg:#e7e2de; --surface:#fdf9f6; --surface-2:#f5f0ec; --surface-3:#ece6e1;
-    --ink:#25292a; --muted:#6c6763; --faint:#9a948f; --line:#dcd5cf; --line-strong:#cbc2ba;
-    --brand:#8a5d3b; --brand-strong:#6f4a2e; --brand-soft:#efe3d8; --on-color:#fdf9f6;
+    --bg:#e7e3dd; --surface:#fffcfa; --surface-2:#f3efeb; --surface-3:#ece6e1;
+    --ink:#252928; --muted:#6c6763; --faint:#9a948f; --line:#dcd5cf; --line-strong:#cbc2ba;
+    --brand:#8a5d3b; --brand-strong:#6f4a2e; --brand-soft:#efe3d8; --on-color:#fffcfa;
     --active:#66704f; --active-soft:#e9ebe2; --active-line:#cdd2bf;
     --gap:#b23a3a; --gap-soft:#f4e1de; --gap-line:#e6bdb7;
     --warn:#94606f; --warn-soft:#f1e6e9; --ss:#5e7778; --pm:#8a5d3b;
-    --shadow:0 1px 2px rgba(37,41,42,.05), 0 12px 30px -16px rgba(37,41,42,.22);
+    --shadow:0 1px 2px rgba(37,41,40,.05), 0 12px 30px -16px rgba(37,41,40,.22);
     --radius:14px; --radius-sm:9px;
     --sans:system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --mono:ui-monospace,"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;
   }
   @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
-    --bg:#1d2021; --surface:#25292a; --surface-2:#212526; --surface-3:#2f3435;
-    --ink:#f3eeea; --muted:#aba6a1; --faint:#7a7571; --line:#3a3f40; --line-strong:#4a4f50;
-    --brand:#c08a5f; --brand-strong:#d4a37c; --brand-soft:#3a2c22; --on-color:#1d2021;
+    --bg:#1d201f; --surface:#252928; --surface-2:#212524; --surface-3:#2f3433;
+    --ink:#f3eeea; --muted:#aba6a1; --faint:#7a7571; --line:#3a3f3e; --line-strong:#4a4f4e;
+    --brand:#c08a5f; --brand-strong:#d4a37c; --brand-soft:#3a2c22; --on-color:#1d201f;
     --active:#bdd19e; --active-soft:#344029; --active-line:#5a6b43;
     --gap:#f08484; --gap-soft:#4a2626; --gap-line:#7a3a3a;
     --warn:#e8abbd; --warn-soft:#4a2e39; --ss:#aebbbb; --pm:#c08a5f;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 34px -18px rgba(0,0,0,.7); color-scheme:dark }
   }
   :root[data-theme="dark"]{
-    --bg:#1d2021; --surface:#25292a; --surface-2:#212526; --surface-3:#2f3435;
-    --ink:#f3eeea; --muted:#aba6a1; --faint:#7a7571; --line:#3a3f40; --line-strong:#4a4f50;
-    --brand:#c08a5f; --brand-strong:#d4a37c; --brand-soft:#3a2c22; --on-color:#1d2021;
+    --bg:#1d201f; --surface:#252928; --surface-2:#212524; --surface-3:#2f3433;
+    --ink:#f3eeea; --muted:#aba6a1; --faint:#7a7571; --line:#3a3f3e; --line-strong:#4a4f4e;
+    --brand:#c08a5f; --brand-strong:#d4a37c; --brand-soft:#3a2c22; --on-color:#1d201f;
     --active:#bdd19e; --active-soft:#344029; --active-line:#5a6b43;
     --gap:#f08484; --gap-soft:#4a2626; --gap-line:#7a3a3a;
     --warn:#e8abbd; --warn-soft:#4a2e39; --ss:#aebbbb; --pm:#c08a5f;
@@ -104,6 +104,11 @@
 
   .panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
   .table-wrap{overflow:auto; max-height:70vh}
+  /* Schedule & Coverage and Utilization: white chart panels with traditional colors in light and dark mode (brand colors everywhere else) */
+  #view-sched, #view-util{--active:#1e8e3e; --active-soft:#e6f4ea; --active-line:#a8dab5; --gap:#d93025; --gap-soft:#fce8e6; --gap-line:#f4b8b2;
+    --warn:#b06000; --warn-soft:#fef3e0; --ss:#1a73e8; --pm:#8430ce; --on-color:#ffffff}
+  #view-sched .panel, #view-util .panel{--surface:#ffffff; --surface-2:#f5f5f5; --surface-3:#eeeeee; --ink:#202124; --muted:#5f6368; --faint:#9aa0a6;
+    --line:#dadce0; --line-strong:#c4c7c5; --brand:#8a5d3b; --brand-strong:#6f4a2e; --brand-soft:#efe3d8; color:var(--ink); color-scheme:light}
   table{border-collapse:separate; border-spacing:0; width:100%; font-size:.82rem}
   thead th{position:sticky; top:0; z-index:3; background:var(--surface-2); color:var(--muted); font-weight:700; font-size:.66rem; letter-spacing:.04em; text-transform:uppercase; padding:9px 8px; border-bottom:1px solid var(--line-strong); white-space:nowrap; text-align:center}
   th .yr, td .yr{display:block; color:var(--faint); font-weight:600; font-size:.9em}
